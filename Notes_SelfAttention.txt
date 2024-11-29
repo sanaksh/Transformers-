@@ -1,0 +1,83 @@
+Step 4: Self-Attention
+The core of a Transformer is the self-attention mechanism. Self-attention allows each token to attend to every other token in the sentence, helping the model learn relationships between words, even if they are far apart.
+For each token, the self-attention mechanism calculates three vectors:
+1.	Query (Q): Represents what a token is looking for.
+2.	Key (K): Represents what each other token can offer.
+3.	Value (V): Represents the actual information a token holds.
+
+Let’s look at how the self-attention mechanism works for the first token, "The" (position 1):
+
+•	The Query vector for "The" tries to find how much attention it should pay to all other tokens in the sentence.
+•	The Key vectors for all tokens represent what each token is offering.
+•	The Value vectors represent the actual meaning of each token that is used once the attention weights are calculated.
+
+Initialization:
+When processing a sentence in a Transformer, each token is first represented by an embedding. These embeddings are vectors in a high-dimensional space (e.g., 512-dimensional). 
+Let's assume the embedding for "The" looks like this in a very simplified vector space:
+•	Embedding for "The": Embedding(The)=[0.2,0.7,0.4]
+                                                  
+The Transformer uses learned weight matrices to create the Query (Q), Key (K), and Value (V) vectors for each token. These weight matrices are different for Q, K, and V, and they are learned during training.
+Let’s assume the model has the following weight matrices for Q, K, and V (these are learned and specific to the model):
+•	Q weight matrix: W^Q (e.g., 3×3) 
+•	K weight matrix: W^K (e.g., 3×3)
+•	V weight matrix: W^V (e.g., 3×3)
+
+The actual values of these weight matrices are learned during training, but for simplicity, we'll use made-up matrices to illustrate the process.
+Example weight matrices (for illustration):
+WQ=[0.1 0.2 0.3 
+    0.4 0.5 0.6
+    0.7 0.8 0.9] 
+    
+WK=[0.3 0.1 0.5 
+    0.6 0.4 0.2 
+    0.9 0.7 0.8] 
+    
+WV=[0.5 0.6 0.7
+    0.1 0.2 0.3 
+    0.9 0.8 0.4] 
+
+
+W^Q = \begin{bmatrix} 0.1 & 0.2 & 0.3 \\ 0.4 & 0.5 & 0.6 \\ 0.7 & 0.8 & 0.9 \end{bmatrix} \quad W^K = \begin{bmatrix} 0.3 & 0.1 & 0.5 \\ 0.6 & 0.4 & 0.2 \\ 0.9 & 0.7 & 0.8 \end{bmatrix} \quad W^V = \begin{bmatrix} 0.5 & 0.6 & 0.7 \\ 0.1 & 0.2 & 0.3 \\ 0.9 & 0.8 & 0.4 \end{bmatrix}WQ=0.10.40.70.20.50.80.30.60.9WK=0.30.60.90.10.40.70.50.20.8WV=0.50.10.90.60.20.80.70.30.4
+ 
+2. Calculate Q, K, and V for "The":
+To calculate the Query (Q), Key (K), and Value (V) vectors for the word "The," we multiply the embedding of "The" by the corresponding weight matrices for Q, K, and V.
+Query (Q) for "The":
+QThe=Embedding(The)×WQQ_{\text{The}} = \text{Embedding(The)} \times W^QQThe=Embedding(The)×WQ
+This is a matrix multiplication of the embedding vector for "The" with the WQW^QWQ matrix:
+QThe=[0.2,0.7,0.4]×[0.10.20.30.40.50.60.70.80.9]Q_{\text{The}} = [0.2, 0.7, 0.4] \times \begin{bmatrix} 0.1 & 0.2 & 0.3 \\ 0.4 & 0.5 & 0.6 \\ 0.7 & 0.8 & 0.9 \end{bmatrix}QThe=[0.2,0.7,0.4]×0.10.40.70.20.50.80.30.60.9
+Let’s compute this step by step:
+•	(0.2×0.1)+(0.7×0.4)+(0.4×0.7)=0.02+0.28+0.28=0.58(0.2 \times 0.1) + (0.7 \times 0.4) + (0.4 \times 0.7) = 0.02 + 0.28 + 0.28 = 0.58(0.2×0.1)+(0.7×0.4)+(0.4×0.7)=0.02+0.28+0.28=0.58
+•	(0.2×0.2)+(0.7×0.5)+(0.4×0.8)=0.04+0.35+0.32=0.71(0.2 \times 0.2) + (0.7 \times 0.5) + (0.4 \times 0.8) = 0.04 + 0.35 + 0.32 = 0.71(0.2×0.2)+(0.7×0.5)+(0.4×0.8)=0.04+0.35+0.32=0.71
+•	(0.2×0.3)+(0.7×0.6)+(0.4×0.9)=0.06+0.42+0.36=0.84(0.2 \times 0.3) + (0.7 \times 0.6) + (0.4 \times 0.9) = 0.06 + 0.42 + 0.36 = 0.84(0.2×0.3)+(0.7×0.6)+(0.4×0.9)=0.06+0.42+0.36=0.84
+So, the Query vector for "The" is:
+QThe=[0.58,0.71,0.84]Q_{\text{The}} = [0.58, 0.71, 0.84]QThe=[0.58,0.71,0.84]
+Key (K) for "The":
+KThe=Embedding(The)×WKK_{\text{The}} = \text{Embedding(The)} \times W^KKThe=Embedding(The)×WK
+Now, we perform matrix multiplication with the WKW^KWK matrix:
+KThe=[0.2,0.7,0.4]×[0.30.10.50.60.40.20.90.70.8]K_{\text{The}} = [0.2, 0.7, 0.4] \times \begin{bmatrix} 0.3 & 0.1 & 0.5 \\ 0.6 & 0.4 & 0.2 \\ 0.9 & 0.7 & 0.8 \end{bmatrix}KThe=[0.2,0.7,0.4]×0.30.60.90.10.40.70.50.20.8
+•	(0.2×0.3)+(0.7×0.6)+(0.4×0.9)=0.06+0.42+0.36=0.84(0.2 \times 0.3) + (0.7 \times 0.6) + (0.4 \times 0.9) = 0.06 + 0.42 + 0.36 = 0.84(0.2×0.3)+(0.7×0.6)+(0.4×0.9)=0.06+0.42+0.36=0.84
+•	(0.2×0.1)+(0.7×0.4)+(0.4×0.7)=0.02+0.28+0.28=0.58(0.2 \times 0.1) + (0.7 \times 0.4) + (0.4 \times 0.7) = 0.02 + 0.28 + 0.28 = 0.58(0.2×0.1)+(0.7×0.4)+(0.4×0.7)=0.02+0.28+0.28=0.58
+•	(0.2×0.5)+(0.7×0.2)+(0.4×0.8)=0.10+0.14+0.32=0.56(0.2 \times 0.5) + (0.7 \times 0.2) + (0.4 \times 0.8) = 0.10 + 0.14 + 0.32 = 0.56(0.2×0.5)+(0.7×0.2)+(0.4×0.8)=0.10+0.14+0.32=0.56
+So, the Key vector for "The" is:
+KThe=[0.84,0.58,0.56]K_{\text{The}} = [0.84, 0.58, 0.56]KThe=[0.84,0.58,0.56]
+Value (V) for "The":
+VThe=Embedding(The)×WVV_{\text{The}} = \text{Embedding(The)} \times W^VVThe=Embedding(The)×WV
+Now, multiply the embedding by the WVW^VWV matrix:
+VThe=[0.2,0.7,0.4]×[0.50.60.70.10.20.30.90.80.4]V_{\text{The}} = [0.2, 0.7, 0.4] \times \begin{bmatrix} 0.5 & 0.6 & 0.7 \\ 0.1 & 0.2 & 0.3 \\ 0.9 & 0.8 & 0.4 \end{bmatrix}VThe=[0.2,0.7,0.4]×0.50.10.90.60.20.80.70.30.4
+•	(0.2×0.5)+(0.7×0.1)+(0.4×0.9)=0.10+0.07+0.36=0.53(0.2 \times 0.5) + (0.7 \times 0.1) + (0.4 \times 0.9) = 0.10 + 0.07 + 0.36 = 0.53(0.2×0.5)+(0.7×0.1)+(0.4×0.9)=0.10+0.07+0.36=0.53
+•	(0.2×0.6)+(0.7×0.2)+(0.4×0.8)=0.12+0.14+0.32=0.58(0.2 \times 0.6) + (0.7 \times 0.2) + (0.4 \times 0.8) = 0.12 + 0.14 + 0.32 = 0.58(0.2×0.6)+(0.7×0.2)+(0.4×0.8)=0.12+0.14+0.32=0.58
+•	(0.2×0.7)+(0.7×0.3)+(0.4×0.4)=0.14+0.21+0.16=0.51(0.2 \times 0.7) + (0.7 \times 0.3) + (0.4 \times 0.4) = 0.14 + 0.21 + 0.16 = 0.51(0.2×0.7)+(0.7×0.3)+(0.4×0.4)=0.14+0.21+0.16=0.51
+So, the Value vector for "The" is:
+VThe=[0.53,0.58,0.51]V_{\text{The}} = [0.53, 0.58, 0.51]VThe=[0.53,0.58,0.51]
+ 
+3. Summary of Q, K, and V for "The":
+For the word "The", we have the following vectors:
+•	Query vector (Q): [0.58,0.71,0.84][0.58, 0.71, 0.84][0.58,0.71,0.84]
+•	Key vector (K): [0.84,0.58,0.56][0.84, 0.58, 0.56][0.84,0.58,0.56]
+•	Value vector (V): [0.53,0.58,0.51][0.53, 0.58, 0.51][0.53,0.58,0.51]
+These vectors will then be used in the attention mechanism to compute attention scores, which determine how much attention each token should pay to every other token in the sequence. The attention scores are calculated by taking the dot product of the Query and Key vectors and normalizing them with a softmax function.
+This process enables each token to "attend" to other tokens in the sequence and update its representation accordingly, helping the model capture relationships between words even if they are far apart in the sentence.
+4o mini
+
+
+
